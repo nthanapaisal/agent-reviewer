@@ -1,6 +1,6 @@
 Instruction
 # I used mini conda currently since we dont have docker yet. to run:
-# conda create -n agent-reviewer python=3.11
+# conda create -n agent-reviewer python=3.11 -y
 # conda activate agent-reviewer
 # pip install -r requirements.txt
 # uvicorn src.main:app --reload
@@ -14,4 +14,3 @@ Example input/output:
 2. "transcription" -> prompt + transcription integration
 
 3. prompt + transcription -> evaluation
-
