@@ -15,19 +15,17 @@ def extract_keywords(user_prompt: str) -> List[str]:
     nlp = spacy.load("en_core_web_sm")
     doc = nlp(user_prompt)
     
-    # Extract complete n. chunks
-    noun_phrases = {chunk.text.lower() for chunk in doc.noun_chunks}
-
     keywords = set()
-    for token in doc:
-        if token.pos_ == "ADJ" and token.head.pos_ == "NOUN":
-            phrase = f"{token.text} {token.head.text}".lower()
+    for token, next_token in zip(doc, list(doc)[1:] + [None]):
+        print(token, token.pos_)
+        if token.pos_ == "ADJ" and next_token.pos_ == "NOUN":
+            phrase = f"{token.text} {next_token.text}".lower()
             keywords.add(phrase)
         elif token.pos_ == "NOUN" or token.pos_ == "ADJ":
             keywords.add(token.text.lower())
 
     # Avoid duplicate n. without adj. exists
-    filtered_keywords = {kw for kw in keywords if not any(kw in phrase and kw != phrase for phrase in noun_phrases)}
+    filtered_keywords = {kw for kw in keywords if not any(kw in other and kw != other for other in keywords)}
 
     return list(filtered_keywords)
 
