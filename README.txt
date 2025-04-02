@@ -3,7 +3,7 @@ Instruction
 # conda create -n agent-reviewer python=3.11
 # conda activate agent-reviewer
 # pip install -r requirements.txt
-# uvicorn src.main:app --reload / cd src && uvicorn main:app --reload
+# uvicorn src.main:app --reload / PYTHONPATH=./src uvicorn main:app --reload
 # notes: to kill process do: kill -9 $(lsof -ti :8000)
 # http://127.0.0.1:8000/docs
 

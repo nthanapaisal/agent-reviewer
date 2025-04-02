@@ -1,0 +1,13 @@
+{
+  "metrics": {
+      "Relevance": "Evaluates whether the agent's response addresses the user's question",
+      "Clarity": "Evaluates the clarity of the agent's response",
+      "Sentiment Score": "Analyzes the sentiment polarity of the agent's tone (positive, neutral, negative)",
+      "Completeness": "Evaluates whether the agent's response contains complete information",
+      "Consistency": "Evaluates whether the agent's response is consistent with the context",
+      "User Satisfaction": "Measures the user's satisfaction with the agent's response",
+      "Engagement Level": "Evaluates the depth of the user's interaction (e.g., simple response vs. asking more questions)",
+      "Problem Solved": "Indicates whether the agent successfully solved the user's problem",
+      "Context Awareness": "Evaluates whether the agent correctly understands the conversation context"
+  }
+}
