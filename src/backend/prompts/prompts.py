@@ -17,7 +17,6 @@ def extract_keywords(user_prompt: str) -> List[str]:
     
     keywords = set()
     for token, next_token in zip(doc, list(doc)[1:] + [None]):
-        print(token, token.pos_)
         if token.pos_ == "ADJ" and next_token.pos_ == "NOUN":
             phrase = f"{token.text} {next_token.text}".lower()
             keywords.add(phrase)
