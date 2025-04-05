@@ -1,0 +1,12 @@
+# Use the official Ollama image as the base
+FROM ollama/ollama
+
+# Update package lists and install bash using apt-get
+RUN apt-get update && apt-get install -y bash
+
+# Copy the custom entrypoint script into the image
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Set the entrypoint to our custom script using bash explicitly
+ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]

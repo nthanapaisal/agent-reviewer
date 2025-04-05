@@ -1,0 +1,28 @@
+version: '3.9'
+
+services:
+  ollama:
+    build:
+      context: .
+      dockerfile: Dockerfile.ollama
+    container_name: ollama
+    ports:
+      - "127.0.0.1:11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+
+  agent-reviewer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: agent-reviewer
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      - ollama
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+
+volumes:
+  ollama_data:
