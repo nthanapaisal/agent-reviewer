@@ -2,3 +2,6 @@ fastapi
 uvicorn[standard]
 python-multipart
 openai-whisper
+pydantic
+ollama
+httpx
