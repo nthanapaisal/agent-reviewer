@@ -5,3 +5,7 @@ openai-whisper
 pydantic
 ollama
 httpx
+whisper
+pyannote.audio
+dotenv
+pydub
