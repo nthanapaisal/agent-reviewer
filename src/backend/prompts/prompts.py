@@ -2,6 +2,8 @@ import json
 from typing import List
 import spacy
 
+spacy.cli.download("en_core_web_sm")
+
 def load_json(filepath: str):
     """ Load JSON file """
     with open(filepath, 'r', encoding='utf-8') as file:
@@ -11,13 +13,12 @@ def extract_keywords(user_prompt: str) -> List[str]:
     """
     Extract key phrases from user_prompt using NLP.
     """
-    spacy.cli.download("en_core_web_sm")
     nlp = spacy.load("en_core_web_sm")
     doc = nlp(user_prompt)
     
     keywords = set()
     for token, next_token in zip(doc, list(doc)[1:] + [None]):
-        if token.pos_ == "ADJ" and next_token.pos_ == "NOUN":
+        if next_token is not None and token.pos_ == "ADJ" and next_token.pos_ == "NOUN":
             phrase = f"{token.text} {next_token.text}".lower()
             keywords.add(phrase)
         elif token.pos_ == "NOUN" or token.pos_ == "ADJ":

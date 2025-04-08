@@ -1,24 +1,19 @@
-import re
 import numpy as np
 import matplotlib
-matplotlib.use('Agg') # Non-interactive
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 import io
 import base64
 
-def generate_analysis(text: str):
-    # Extract metrics to do analysis
-    pattern = r"([\w_]+),\s*(\d)"
-    matches = re.findall(pattern, text)
-
+def generate_analysis(data: list[tuple[str, int, str]]):
     # Turn into dict
-    scores_dict = {metric: int(score) for metric, score in matches}
+    scores_dict = {metric: score for (metric, score, _) in data}
+    print(scores_dict)
     metrics = list(scores_dict.keys())
     scores = list(scores_dict.values())
 
-    # Edit more report content below for business and data analysis
-    # Calculate mean and SD
+    # Mean and SD
     average_score = np.mean(scores)
     std_dev = np.std(scores)
 
@@ -29,7 +24,7 @@ def generate_analysis(text: str):
         "Performance Evaluation": "Consistent Performance" if average_score > 4.5 and std_dev < 0.5 else "Inconsistent Performance",
     }
 
-    # Bar Chart
+    # Bar chart
     plt.figure(figsize=(8, 7))
     sns.barplot(x=metrics, y=scores, palette="Blues_d")
     plt.xticks(rotation=45)
@@ -38,13 +33,11 @@ def generate_analysis(text: str):
     plt.ylabel("Score (out of 5)")
     plt.xlabel("Metrics")
 
-    # Encode the graph
     buf = io.BytesIO()
     plt.savefig(buf, format="png")
     buf.seek(0)
     bar_chart_base64 = base64.b64encode(buf.getvalue()).decode("utf-8")
     plt.close()
-
 
     # Box plot
     plt.figure(figsize=(8, 7))
@@ -52,13 +45,11 @@ def generate_analysis(text: str):
     plt.title("Customer Service Score Distribution")
     plt.xlabel("Score (out of 5)")
 
-    # Encode the graph
     buf = io.BytesIO()
     plt.savefig(buf, format="png")
     buf.seek(0)
     box_chart_base64 = base64.b64encode(buf.getvalue()).decode("utf-8")
     plt.close()
-
 
     return {
         "analysis_report": analysis_report,

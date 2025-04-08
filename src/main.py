@@ -16,7 +16,8 @@ class EvaluatorRequest(BaseModel):
     prompt: str
 
 class AnalysisRequest(BaseModel):
-    report: str
+    report: list[tuple[str, int, str]]
+    summary: str
 
 @app.post("/transcribe")
 async def transcribe(file: UploadFile = File(...)):
