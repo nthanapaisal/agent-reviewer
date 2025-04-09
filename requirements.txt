@@ -1,6 +1,9 @@
 fastapi
 uvicorn[standard]
 python-multipart
+spacy
+matplotlib
+seaborn
 openai-whisper
 pydantic
 ollama

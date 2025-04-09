@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import List
 import shutil
 import os
-from backend.service import transcribe_audio, generate_prompts as generate_prompt_suggestions, evaluate_transcription
+from backend.service import transcribe_audio, generate_prompts as generate_prompt_suggestions, evaluate_transcription, create_analysis
 
 
 app = FastAPI()
@@ -14,6 +14,10 @@ class PromptRequest(BaseModel):
 
 class EvaluatorRequest(BaseModel):
     prompt: str
+
+class AnalysisRequest(BaseModel):
+    report: list[tuple[str, int, str]]
+    summary: str
 
 @app.post("/transcribe")
 async def transcribe(file: UploadFile = File(...)):
@@ -49,3 +53,11 @@ def evaluate(evaluator_payload: EvaluatorRequest):
         return {"evaluation": result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Evaluation failed: {str(e)}")
+
+@app.post("/create-analysis")
+def generate_analysis(analysis_payload: AnalysisRequest):
+    try:
+        analysis = create_analysis(analysis_payload.report)
+        return analysis
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Analysis generation failed: {str(e)}")
