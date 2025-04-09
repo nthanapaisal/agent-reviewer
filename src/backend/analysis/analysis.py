@@ -6,10 +6,11 @@ import seaborn as sns
 import io
 import base64
 
-def generate_analysis(data: list[tuple[str, int, str]]):
+def generate_analysis(data: list[tuple[str, float, str]], summary: str):
     # Turn into dict
     scores_dict = {metric: score for (metric, score, _) in data}
-    print(scores_dict)
+    individual_scores = "\n".join([f"- {metric}: {score}" for metric, score in scores_dict.items()])
+    print(individual_scores)
     metrics = list(scores_dict.keys())
     scores = list(scores_dict.values())
 
@@ -19,6 +20,8 @@ def generate_analysis(data: list[tuple[str, int, str]]):
 
     # Report
     analysis_report = {
+        "Summary": summary,
+        "Evaluated Metrics": individual_scores,
         "Average Score": round(average_score, 2),
         "Standard Deviation": round(std_dev, 2),
         "Performance Evaluation": "Consistent Performance" if average_score > 4.5 and std_dev < 0.5 else "Inconsistent Performance",

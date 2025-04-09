@@ -12,5 +12,5 @@ def generate_prompts(transcription: str, user_prompt: str) -> str:
 def evaluate_transcription(prompt: str) -> dict:
     return evaluate_transcription_quality(prompt)
 
-def create_analysis(evaluation: list[tuple[str, int, str]]) -> str:
-    return generate_analysis(evaluation)
+def create_analysis(evaluation: list[tuple[str, float, str]], summary: str) -> str:
+    return generate_analysis(evaluation, summary)

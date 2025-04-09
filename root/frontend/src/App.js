@@ -52,8 +52,8 @@ function App() {
         prompt: generatedPrompt,
       });
 
-      setEvaluationResult(res.data.evaluation);
-      setApiLog((log) => [...log, `✅ Evaluation: ${res.data.evaluation}`]);
+      setEvaluationResult(res.data.evaluation.evaluation);
+      setApiLog((log) => [...log, `✅ Evaluation: ${res.data.evaluation.evaluation}`]);
     } catch (error) {
       console.error(error);
       setApiLog((log) => [...log, `❌ Evaluation Error: ${error.message}`]);
@@ -62,13 +62,12 @@ function App() {
 
   const handleAnalysis = async () => {
     try {
-      const jsonResult = "{" + evaluationResult + "}";
-      const parsedResult = JSON.parse(jsonResult);
+      const parsedResult = JSON.parse(evaluationResult);
       const res = await axios.post("http://localhost:8000/create-analysis", {
         report: parsedResult.report,
         summary: parsedResult.summary,
       });
-      const { analysis_report, bar_chart, box_chart } = res.data;
+      const { analysis_report, bar_chart, box_chart} = res.data;
       setAnalysisResult(analysis_report);
       setBarChart(bar_chart);
       setBoxChart(box_chart);
@@ -112,20 +111,21 @@ function App() {
       </div>
 
       <div>
-        <h3>Performance Report</h3>
-        <button onClick={handleAnalysis}>Generate Analysis</button>
+      <button onClick={handleAnalysis}>Generate Analysis</button>
+        <h3>Performance Report:</h3>
         {analysisResult && barChart && boxChart && (
           <><div>
-            <h4>Analysis Report:</h4>
+            <h5>Bar Chart:</h5>
+            <img src={barChart} alt="Bar Chart" />
+            <h5>Evaluated Metrics:</h5>
+            <p>{analysisResult["Evaluated Metrics"]}</p>
+          </div><div>
+          <h5>Box Chart:</h5>
+            <img src={boxChart} alt="Box Chart" />
             <p>Average Score: {analysisResult["Average Score"]}</p>
             <p>Standard Deviation: {analysisResult["Standard Deviation"]}</p>
             <p>Performance Evaluation: {analysisResult["Performance Evaluation"]}</p>
-          </div><div>
-            <h5>Bar Chart:</h5>
-            <img src={barChart} alt="Bar Chart" />
-          </div><div>
-            <h5>Box Chart:</h5>
-            <img src={boxChart} alt="Box Chart" />
+            <p>Summary: {analysisResult["Summary"]}</p>
           </div></>
         )}
       </div>

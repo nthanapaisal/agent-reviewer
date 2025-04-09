@@ -25,7 +25,7 @@ class EvaluatorRequest(BaseModel):
     prompt: str
 
 class AnalysisRequest(BaseModel):
-    report: list[tuple[str, int, str]]
+    report: list[tuple[str, float, str]]
     summary: str
 
 @app.post("/transcribe")
@@ -66,7 +66,7 @@ def evaluate(evaluator_payload: EvaluatorRequest):
 @app.post("/create-analysis")
 def generate_analysis(analysis_payload: AnalysisRequest):
     try:
-        analysis = create_analysis(analysis_payload.report)
+        analysis = create_analysis(analysis_payload.report, analysis_payload.summary)
         return analysis
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Analysis generation failed: {str(e)}")

@@ -26,7 +26,8 @@ services:
   
   frontend:
     build:
-      context: ./src/frontend
+      context: .
+      dockerfile: Dockerfile.frontend
     container_name: frontend
     ports:
       - "3000:3000"
@@ -35,7 +36,7 @@ services:
     environment:
       - REACT_APP_API_URL=http://agent-reviewer:8000
     volumes:
-      - ./src/frontend:/app
+      - ./root/frontend:/app
 
 volumes:
   ollama_data:

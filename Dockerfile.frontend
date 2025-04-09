@@ -1,11 +1,11 @@
 FROM node:16
 
-WORKDIR /src/frontend
+WORKDIR /app
 
-COPY package*.json ./
+COPY root/frontend/package*.json ./
 RUN npm install
 
-COPY . .
+COPY root/frontend ./
 
 RUN npm run build
 
