@@ -23,6 +23,19 @@ services:
       - ollama
     environment:
       - OLLAMA_HOST=http://ollama:11434
+  
+  frontend:
+    build:
+      context: ./src/frontend
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - agent-reviewer
+    environment:
+      - REACT_APP_API_URL=http://agent-reviewer:8000
+    volumes:
+      - ./src/frontend:/app
 
 volumes:
   ollama_data:

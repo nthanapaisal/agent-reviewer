@@ -22,6 +22,7 @@ I used mini conda currently since we dont have docker yet. to run:
 1. docker-compose up --build
 2. check if the ollama has been pulled into the volumne: docker exec -it ollama ollama list
 3. http://127.0.0.1:8000/docs
+4. http://localhost:3000 for frontend testing
 4. ctrlc and.. choose one below
    1.    stop+remove containers, but keep image and volume: docker-compose down
    2.    OR stop and delete containers and images: docker-compose down --rmi all
