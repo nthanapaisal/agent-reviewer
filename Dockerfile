@@ -1,4 +1,7 @@
-FROM python:3.11-slim
+FROM python:3.11-bookworm
+
+# Install ffmpeg and any dependencies
+RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
