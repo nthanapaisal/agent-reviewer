@@ -8,7 +8,10 @@ def evaluate_transcription_quality(prompt: str) -> dict:
     Evaluate a transcription-related prompt using a local LLM (via Ollama).
     Assumes the input 'prompt' includes both the system and user instructions.
     """
-    print(f"Evaluating transcription: {prompt}")
+    print("-----------------------")
+    print(f"Log: evaluating transcription: {prompt}")
+    print("-----------------------")
+
 
     try:
         response = client.chat(
@@ -17,11 +20,16 @@ def evaluate_transcription_quality(prompt: str) -> dict:
         )
         feedback = response['message']['content'].strip()
 
-        return {
-            "evaluation": feedback
-        }
+
+        print("-----------------------")
+        print("Log: completed evaluation of prompts_payload")
+        print("-----------------------")
+  
+        return feedback
+
 
     except Exception as e:
         return {
-            "evaluation": f"Evaluation failed: {str(e)}"
+            "report": f"Evaluation failed: {str(e)}",
+            "summary": "N/A"
         }

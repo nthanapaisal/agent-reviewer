@@ -1,5 +1,5 @@
 {
-  "metrics": {
+  "customer_service_metrics": {
       "Relevance": "Evaluates whether the agent's response addresses the user's question",
       "Clarity": "Evaluates the clarity of the agent's response",
       "Sentiment Score": "Analyzes the sentiment polarity of the agent's tone (positive, neutral, negative)",
