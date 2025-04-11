@@ -6,16 +6,9 @@ from pydub import AudioSegment
 import re
 import datetime
 
-"""
-Input: 
-    string path to an audio file
-Output:
-    (
-    Transcription: list of tuples (speaker, text),
-    datetime: datetime object,
-    duration length of the original audio file in milliseconds (ms):
-    )
-"""
+# Load the Whisper model globally
+whisper_model = whisper.load_model("small")
+
 def map_speakers(transcription):
     """
     Convert a transcription list of tuples into a single formatted string,
@@ -74,8 +67,8 @@ def transcribe_file(filepath: str):
     print("Log: diarization done")
     print("---------------------")
     
-    # available models: tiny, base, small, medium, large, turbo
-    model = whisper.load_model("small")
+    # Use the pre-loaded Whisper model
+    model = whisper_model  # No need to load it again
     
     # for each segment transcribe it and append to the list
     transcription = []

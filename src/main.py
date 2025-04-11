@@ -5,8 +5,7 @@ from typing import Optional
 from typing import List
 import shutil
 import os
-from backend.service import transcribe_audio, generate_prompts as generate_prompt_suggestions, evaluate_transcription, create_analysis, evaluate_conversation, read_report_by_id
-
+from backend.service import transcribe_audio, generate_prompts as generate_prompt_suggestions, evaluate_transcription, create_analysis, evaluate_conversation, read_all_reports, read_report_by_id, generate_reports_analysis, get_reports_analysis
 
 app = FastAPI()
 
@@ -57,17 +56,18 @@ def evaluate(evaluator_payload: EvaluatorRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Evaluation failed: {str(e)}")
 
-@app.post("/generate-analysis")
-def generate_analysis(analysis_payload: AnalysisRequest):
+@app.post("/generate-report-analysis")
+def generate_report_analysis(analysis_payload: AnalysisRequest):
     try:
         analysis = create_analysis(analysis_payload.report)
         return analysis
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Analysis generation failed: {str(e)}")
 
-@app.post("/evaluate_convo")
-async def evaluate_convo(
+@app.post("/evaluate_audio")
+async def evaluate_audio(
     file: UploadFile = File(...),                 # required
+    employee_id: str = Form(...),
     user_prompt: Optional[str] = Form(None),      # optional, defaults to None
     prompt_name: Optional[str] = Form(None)       # optional, defaults to None
 ):
@@ -77,7 +77,7 @@ async def evaluate_convo(
             shutil.copyfileobj(file.file, buffer)
             print(f"Temp file created: {temp_filename}")
 
-        complete_analysis = await evaluate_conversation(temp_filename, user_prompt, prompt_name)
+        complete_analysis = await evaluate_conversation(temp_filename, employee_id, user_prompt, prompt_name)
         return complete_analysis
 
     except Exception as e:
@@ -87,9 +87,34 @@ async def evaluate_convo(
         if os.path.exists(temp_filename):
             os.remove(temp_filename)
 
+@app.get("/get-reports")
+def get_reports():
+    try:
+        all_reports = read_all_reports()
+        return all_reports
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Analysis generation failed: {str(e)}")
+
 @app.get("/get-report-id")
 def get_report_id(job_id: str):
-    return read_report_by_id(job_id)
+    try:
+        report = read_report_by_id(job_id)
+        return report
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Analysis generation failed: {str(e)}")
 
-# @app.get("/get-reports")
-# def analyze_convo():
+@app.post("/generate-overall-analysis")
+def generate_overall_analysis():
+    try:
+        analysis = generate_reports_analysis()
+        return analysis
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Analysis generation failed: {str(e)}")
+
+@app.get("/get-overall-analysis")
+def get_overall_analysis():
+    try:
+        analysis = get_reports_analysis()
+        return analysis
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Analysis generation failed: {str(e)}")
