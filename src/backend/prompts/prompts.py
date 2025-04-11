@@ -1,6 +1,10 @@
 import json
 from typing import List
 import spacy
+from fastapi import HTTPException
+from typing import Optional
+import re
+import json
 
 spacy.cli.download("en_core_web_sm")
 
@@ -29,30 +33,45 @@ def extract_keywords(user_prompt: str) -> List[str]:
 
     return list(filtered_keywords)
 
+def build_prompt(transcription: str, user_prompt: Optional[str], prompt_name: Optional[str]):
+    
+    print("-----------------------")
+    print("Log: constructing prompts_payload")
+    print("-----------------------")
 
-def build_prompt(transcription: str, user_prompt: str, prompt_name: str = "template") -> str:
-    """
-    Construct a system prompt based on the conversation transcription, user-defined metrics, and selected prompt template.
-    """
-    # Load predefined metrics and system templates
+    # Load your configs
     metrics = load_json("./src/configs/metrics.json")
     prompts = load_json("./src/configs/prompts.json")
-    
-    # Ensure the user_prompt is not empty, pad it if necessary
+
+    # Use default for prompt_name if it is None or empty, had to do it this way instead of via param
+    prompt_name = prompt_name or "customer_service_metrics"
+
+    # Check if the prompt_name exists in metrics
+    if prompt_name not in metrics:
+        raise HTTPException(status_code=400, detail=f"Unknown prompt_name: '{prompt_name}'")
+
     if not user_prompt:
-        user_prompt = prompts["default"]
-    
-    # Extract key points from user_prompt
+        user_prompt = ", ".join(metrics[prompt_name].keys())
+
+    # Optionally, you might extract keywords if needed:
     extracted_keywords = extract_keywords(user_prompt)
+
+    # Get the prompt template
+    prompt_template = prompts["template"]
+
+    # Format the final prompt
+    try:
+        formatted_prompt = prompt_template.format(
+            transcription=transcription,
+            metrics=", ".join(metrics[prompt_name].keys()),  # or change to a different default if needed
+            user_prompt=", ".join(extracted_keywords) if extracted_keywords else user_prompt
+        )
+    except Exception as e:
+        raise ValueError(f"Prompt generation failed: {str(e)}")
+
+    print("-----------------------")
+    print("Log: completed construction prompts_payload")
+    print("-----------------------")
     
-    # Add a default metric if necessary
-    prompt_template = prompts.get(prompt_name, prompts["template"])
-    
-    # Format the prompt with predefined metrics and user input
-    formatted_prompt = prompt_template.format(
-        transcription=transcription,
-        metrics=", ".join(metrics["metrics"]),
-        user_prompt=", ".join(extracted_keywords) if extracted_keywords else user_prompt
-    )
-    
-    return formatted_prompt
+    return (formatted_prompt, user_prompt, prompt_name)
+

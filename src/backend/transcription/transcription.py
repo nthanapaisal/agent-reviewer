@@ -16,6 +16,34 @@ Output:
     duration length of the original audio file in milliseconds (ms):
     )
 """
+def map_speakers(transcription):
+    """
+    Convert a transcription list of tuples into a single formatted string,
+    mapping each unique speaker ID to an alphabetical label (A, B, …).
+
+    Args:
+        transcription (list of tuple): Each tuple is (speaker_id, text)
+
+    Returns:
+        str: A string with each line prefixed by the speaker label.
+    """
+    speaker_map = {}
+    next_label = ord("A")
+    formatted_lines = []
+    
+    for speaker_id, text in transcription:
+        # If speaker_id hasn't been seen, assign the next available label.
+        if speaker_id not in speaker_map:
+            speaker_map[speaker_id] = chr(next_label)
+            next_label += 1
+        # Get the letter for the speaker.
+        label = speaker_map[speaker_id]
+        # Strip extra whitespace and format the line.
+        formatted_lines.append(f"{label}: {text.strip()}")
+    
+    # Join lines with a space (or newline if you prefer).
+    return " ".join(formatted_lines)
+
 def transcribe_file(filepath: str):
     time = datetime.datetime.now()
     temp_name = "audio.wav"
@@ -67,8 +95,10 @@ def transcribe_file(filepath: str):
     os.remove("a.wav")
     os.remove("audio.wav")
     os.remove("diarization.txt")
+    
+    transcription_final = map_speakers(transcription)
 
-    return (transcription, time, duration)
+    return (transcription_final, time, duration)
 
 # adds a blank 2 second pad to the beginning of the clip to ensure the model doesn't miss any audio
 def pad_audio(filepath, output_name="audio.wav"):    
