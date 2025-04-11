@@ -1,11 +1,36 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi import Form
+from fastapi import BackgroundTasks
 from pydantic import BaseModel
 from typing import Optional
 from typing import List
 import shutil
 import os
-from backend.service import transcribe_audio, generate_prompts as generate_prompt_suggestions, evaluate_transcription, create_analysis, evaluate_conversation, read_all_reports, read_report_by_id, generate_reports_analysis, get_reports_analysis
+from components.service import transcribe_audio, generate_prompts as generate_prompt_suggestions, evaluate_transcription, create_analysis, evaluate_conversation, read_all_reports, read_report_by_id, generate_reports_analysis, get_reports_analysis
+from fastapi import WebSocket
+
+active_connections: List[WebSocket] = []
+
+@app.websocket("/ws/notifications")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    active_connections.append(websocket)
+    try:
+        while True:
+            await websocket.receive_text()  # Keep alive
+    except:
+        active_connections.remove(websocket)
+
+async def notify_frontend_ws(analysis: dict):
+    for conn in active_connections:
+        try:
+            await conn.send_json({"event": "new_analysis", "summary": "New analysis generated"})
+        except:
+            active_connections.remove(conn)
+            
+async def trigger_background_analysis():
+    analysis = generate_reports_analysis()
+    await notify_frontend_ws(analysis)
 
 app = FastAPI()
 
@@ -20,6 +45,7 @@ class EvaluatorRequest(BaseModel):
 class AnalysisRequest(BaseModel):
     report: list[tuple[str, int, str]]
     summary: str
+
 
 @app.post("/transcribe")
 async def transcribe(file: UploadFile = File(...)):
@@ -66,18 +92,22 @@ def generate_report_analysis(analysis_payload: AnalysisRequest):
 
 @app.post("/evaluate_audio")
 async def evaluate_audio(
-    file: UploadFile = File(...),                 # required
+    background_tasks: BackgroundTasks,
+    file: UploadFile = File(...),
     employee_id: str = Form(...),
-    user_prompt: Optional[str] = Form(None),      # optional, defaults to None
-    prompt_name: Optional[str] = Form(None)       # optional, defaults to None
+    user_prompt: Optional[str] = Form(None),
+    prompt_name: Optional[str] = Form(None)
 ):
     temp_filename = f"temp_{file.filename}"
     try:
         with open(temp_filename, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
-            print(f"Temp file created: {temp_filename}")
 
         complete_analysis = await evaluate_conversation(temp_filename, employee_id, user_prompt, prompt_name)
+
+        # Trigger background analysis after transcription completes
+        background_tasks.add_task(trigger_background_analysis)
+
         return complete_analysis
 
     except Exception as e:
