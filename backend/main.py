@@ -1,12 +1,10 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException, Form, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import Form
 from pydantic import BaseModel
 from typing import Optional
-from typing import List
 import shutil
 import os
-from backend.service import transcribe_audio, generate_prompts as generate_prompt_suggestions, evaluate_transcription, create_analysis, evaluate_conversation, read_all_reports, read_report_by_id, generate_reports_analysis, get_reports_analysis
+from src.service import transcribe_audio, generate_prompts as generate_prompt_suggestions, evaluate_transcription, create_analysis, evaluate_conversation, read_all_reports, read_report_by_id, read_reports_by_employee, generate_reports_analysis, generate_employee_analysis, get_reports_analysis, get_prompt_options
 
 app = FastAPI()
 
@@ -111,11 +109,27 @@ def get_report_id(job_id: str):
         return report
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Analysis generation failed: {str(e)}")
+    
+@app.get("/get-report-employee")
+def get_report_id(employee_id: str):
+    try:
+        report = read_reports_by_employee(employee_id)
+        return report
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Analysis generation failed: {str(e)}")
 
 @app.post("/generate-overall-analysis")
 def generate_overall_analysis():
     try:
         analysis = generate_reports_analysis()
+        return analysis
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Analysis generation failed: {str(e)}")
+    
+@app.post("/generate-employee-analysis")
+def get_employee_analysis(employee_id: str):
+    try:
+        analysis = generate_employee_analysis(employee_id)
         return analysis
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Analysis generation failed: {str(e)}")
@@ -127,3 +141,34 @@ def get_overall_analysis():
         return analysis
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Analysis generation failed: {str(e)}")
+    
+@app.get("/get-prompt-options")
+def get_prompt_options_route():
+    try:
+        options = get_prompt_options()
+        return {"prompt_options": options}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.websocket("/ws/reports")
+async def websocket_get_reports(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        all_reports = read_all_reports()
+        await websocket.send_json(all_reports)
+    except Exception as e:
+        await websocket.send_json({"error": str(e)})
+    finally:
+        await websocket.close()
+
+@app.websocket("/ws/overall-analysis")
+async def websocket_get_overall_analysis(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        generate_reports_analysis()
+        analysis = get_reports_analysis()
+        await websocket.send_json(analysis)
+    except Exception as e:
+        await websocket.send_json({"error": str(e)})
+    finally:
+        await websocket.close()

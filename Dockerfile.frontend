@@ -2,10 +2,10 @@ FROM node:16
 
 WORKDIR /app
 
-COPY root/frontend/package*.json ./
+COPY frontend/package*.json ./
 RUN npm install
 
-COPY root/frontend ./
+COPY frontend ./
 
 RUN npm run build
 

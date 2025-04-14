@@ -3,7 +3,6 @@ from typing import List
 import spacy
 from fastapi import HTTPException
 from typing import Optional
-import re
 import json
 
 spacy.cli.download("en_core_web_sm")
@@ -40,8 +39,8 @@ def build_prompt(transcription: str, user_prompt: Optional[str], prompt_name: Op
     print("-----------------------")
 
     # Load your configs
-    metrics = load_json("./src/configs/metrics.json")
-    prompts = load_json("./src/configs/prompts.json")
+    metrics = load_json("./backend/configs/metrics.json")
+    prompts = load_json("./backend/configs/prompts.json")
 
     # Use default for prompt_name if it is None or empty, had to do it this way instead of via param
     prompt_name = prompt_name or "customer_service_metrics"

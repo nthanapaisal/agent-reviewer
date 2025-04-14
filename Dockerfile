@@ -25,4 +25,4 @@ COPY . .
 EXPOSE 8000
 
 # Run the application
-CMD ["/bin/bash", "-c", "PYTHONPATH=./src uvicorn main:app --host 0.0.0.0 --reload"]
+CMD ["/bin/bash", "-c", "PYTHONPATH=./backend uvicorn main:app --host 0.0.0.0 --reload"]

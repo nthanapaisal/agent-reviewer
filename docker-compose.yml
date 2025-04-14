@@ -36,7 +36,7 @@ services:
     environment:
       - REACT_APP_API_URL=http://agent-reviewer:8000
     volumes:
-      - ./root/frontend:/app
+      - ./frontend:/app
 
 volumes:
   ollama_data:
