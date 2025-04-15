@@ -1,8 +1,8 @@
-from backend.transcription.transcription import transcribe_file
-from backend.prompts.prompts import build_prompt
-from backend.evaluator.evaluator import evaluate_transcription_quality
-from backend.analysis.analysis import generate_analysis
-from backend.analysis.general_analysis import extract_evaluated_metrics, create_trend_graphs, compute_overall_performance_percentages
+from src.transcription.transcription import transcribe_file
+from src.prompts.prompts import build_prompt
+from src.evaluator.evaluator import evaluate_transcription_quality
+from src.analysis.analysis import generate_analysis
+from src.analysis.general_analysis import extract_evaluated_metrics, create_trend_graphs, compute_overall_performance_percentages
 import uuid
 import json
 import os
@@ -107,6 +107,23 @@ def read_report_by_id(job_id: str):
 
     return all_reports[job_id]
 
+def read_reports_by_employee(employee_id: str):
+    print("-----------------------")
+    print(f"Log: retrieving all reports for employee_id: {employee_id}")
+    print("-----------------------")
+
+    all_reports = read_all_reports()
+
+    employee_reports = {
+        job_id: report for job_id, report in all_reports.items()
+        if report.get("employee_id") == employee_id
+    }
+
+    if not employee_reports:
+        raise HTTPException(status_code=404, detail=f"No reports found for employee_id: {employee_id}")
+
+    return employee_reports
+
 def generate_reports_analysis():
     print("-----------------------")
     print(f"Log: generating overall analysis for all reports")
@@ -137,6 +154,39 @@ def generate_reports_analysis():
     print("-----------------------")
 
     return overall_analysis
+
+def generate_employee_analysis(employee_id: str):
+    print("-----------------------")
+    print(f"Log: generating analysis for employee_id: {employee_id}")
+    print("-----------------------")
+
+    employee_reports = read_reports_by_employee(employee_id)
+
+    # Trend Analysis
+    metrics_data = extract_evaluated_metrics(employee_reports)
+    metrics_data_with_graphs64 = create_trend_graphs(metrics_data)
+
+    # Overall Analysis
+    overall_performance_percentages = compute_overall_performance_percentages(metrics_data)
+
+    employee_analysis = {
+        "employee_id": employee_id,
+        "metrics_data": metrics_data_with_graphs64,
+        "overall_performance_data": overall_performance_percentages
+    }
+
+    # Optionally save to file
+    os.makedirs("./analysis/employee", exist_ok=True)
+    output_path = f'./analysis/employee/{employee_id}_analysis.json'
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(employee_analysis, f, indent=4)
+
+    print("-----------------------")
+    print(f"Log: completed analysis for employee_id {employee_id}")
+    print("-----------------------")
+
+    return employee_analysis
+
     
 def get_reports_analysis():
     print("-----------------------")
@@ -155,3 +205,12 @@ def get_reports_analysis():
         raise HTTPException(status_code=500, detail="Report database is not valid JSON.")
 
     return analysis
+
+def get_prompt_options():
+    metrics_path = os.path.join(os.path.dirname(__file__), "../configs/metrics.json")
+    try:
+        with open(metrics_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return list(data.keys())
+    except Exception as e:
+        raise RuntimeError(f"Failed to load prompt options: {e}")

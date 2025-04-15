@@ -11,25 +11,33 @@ def extract_evaluated_metrics(all_reports: Dict[str, Dict]) -> Dict[str, List[fl
     result = {}
 
     for report in all_reports.values():
+        job_id = report.get("job_id", "unknown")
+        employee_id = report.get("employee_id", "unknown")
+        label = f"{employee_id}-{job_id[:5]}"
         evaluated_transcription = report.get("evaluated_transcription", [])
         
         # Iterate through each metric in evaluated_transcription
         for metric, score, _ in evaluated_transcription:
             if metric not in result:
-                result[metric] = []  # Create an empty list if the metric is not yet in the result
-            result[metric].append(score)
+                result[metric] = {   # Create an empty dict if the metric is not yet in the result
+                    "scores": [],
+                    "labels": []
+                }
+            result[metric]["scores"].append(score)
+            result[metric]["labels"].append(label)
     
     return result
 
 def create_trend_graphs(metrics_data: Dict[str, List[float]]) -> Dict[str, Dict]:
     result = {}
 
-    for metric_name, values in metrics_data.items():
+    for metric_name, data in metrics_data.items():
         # Create a new figure
         plt.figure(figsize=(10, 6))
         
-        # x-axis: report number (or simply the index of the metric values)
-        x_vals = [f"Report {i+1}" for i in range(len(values))]
+        # x-axis: report index with employee id and job id
+        values = data["scores"]
+        x_vals = data["labels"]
         
         # Plot the values for the current metric
         plt.plot(x_vals, values, marker='o', label=metric_name)
@@ -65,8 +73,9 @@ def create_trend_graphs(metrics_data: Dict[str, List[float]]) -> Dict[str, Dict]
 
 def compute_overall_performance_percentages(data: Dict[str, List[float]], threshold: float = 4.5) -> Dict[str, Dict]:
     performance_data = {}
-
-    for metric, scores in data.items():
+    
+    for metric, metric_data in data.items():
+        scores = metric_data["scores"]
         # Compute basic performance metrics
         mean_score = np.mean(scores)
         median_score = np.median(scores)
@@ -75,13 +84,13 @@ def compute_overall_performance_percentages(data: Dict[str, List[float]], thresh
         percentile_10 = np.percentile(scores, 10)
         percentile_90 = np.percentile(scores, 90)
 
-        # Convert any numpy.int64 to int to ensure compatibility with JSON serialization
-        mean_score = int(mean_score)
-        median_score = int(median_score)
-        min_score = int(min_score)
-        max_score = int(max_score)
-        percentile_10 = int(percentile_10)
-        percentile_90 = int(percentile_90)
+        # Convert any numpy.int64 to float to ensure compatibility with JSON serialization
+        mean_score = float(mean_score)
+        median_score = float(median_score)
+        min_score = float(min_score)
+        max_score = float(max_score)
+        percentile_10 = float(percentile_10)
+        percentile_90 = float(percentile_90)
 
         # Calculate the percentage of scores above the threshold
         above_threshold_count = sum(1 for score in scores if score >= threshold)
