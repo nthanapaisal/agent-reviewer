@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "./App.css";
 
 function App() {
   const [file, setFile] = useState(null);
@@ -26,8 +27,14 @@ function App() {
     formData.append("prompt_name", promptName);
 
     try {
-      const res = await axios.post("http://localhost:8000/evaluate_audio", formData);
-      setApiLog((log) => [...log, `✅ Evaluate Audio Success: ${JSON.stringify(res.data)}`]);
+      const res = await axios.post(
+        "http://localhost:8000/evaluate_audio",
+        formData
+      );
+      setApiLog((log) => [
+        ...log,
+        `✅ Evaluate Audio Success: ${JSON.stringify(res.data)}`,
+      ]);
       fetchReports();
       fetchOverallAnalysis();
     } catch (error) {
@@ -45,7 +52,10 @@ function App() {
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
       if (data.error) {
-        setApiLog((log) => [...log, `❌ WebSocket Reports Error: ${data.error}`]);
+        setApiLog((log) => [
+          ...log,
+          `❌ WebSocket Reports Error: ${data.error}`,
+        ]);
       } else {
         setReports(data);
         setApiLog((log) => [...log, `✅ WebSocket Received Reports`]);
@@ -59,7 +69,9 @@ function App() {
 
   const fetchReportById = async (jobId) => {
     try {
-      const res = await axios.get("http://localhost:8000/get-report-id", { params: { job_id: jobId } });
+      const res = await axios.get("http://localhost:8000/get-report-id", {
+        params: { job_id: jobId },
+      });
       setSelectedReport(res.data);
     } catch (error) {
       setApiLog((log) => [...log, `❌ Get Report ID Error: ${error.message}`]);
@@ -76,7 +88,10 @@ function App() {
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
       if (data.error) {
-        setApiLog((log) => [...log, `❌ WebSocket Analysis Error: ${data.error}`]);
+        setApiLog((log) => [
+          ...log,
+          `❌ WebSocket Analysis Error: ${data.error}`,
+        ]);
       } else {
         setOverallAnalysis(data);
         setApiLog((log) => [...log, `✅ WebSocket Received Analysis`]);
@@ -90,19 +105,29 @@ function App() {
 
   const handleEmployeeSearch = async () => {
     try {
-      const reportRes = await axios.get("http://localhost:8000/get-report-employee", {
-        params: { employee_id: searchEmployeeId },
-      });
+      const reportRes = await axios.get(
+        "http://localhost:8000/get-report-employee",
+        {
+          params: { employee_id: searchEmployeeId },
+        }
+      );
       setEmployeeReports(reportRes.data);
 
-      const analysisRes = await axios.post("http://localhost:8000/generate-employee-analysis", null, {
-        params: { employee_id: searchEmployeeId },
-      });
+      const analysisRes = await axios.post(
+        "http://localhost:8000/generate-employee-analysis",
+        null,
+        {
+          params: { employee_id: searchEmployeeId },
+        }
+      );
       setEmployeeAnalysis(analysisRes.data);
 
       setActiveEmployeeId(searchEmployeeId);
 
-      setApiLog((log) => [...log, `✅ Employee report and analysis loaded for: ${employeeId}`]);
+      setApiLog((log) => [
+        ...log,
+        `✅ Employee report and analysis loaded for: ${employeeId}`,
+      ]);
     } catch (error) {
       setEmployeeReports(null);
       setEmployeeAnalysis(null);
@@ -115,7 +140,10 @@ function App() {
     setEmployeeReports(null);
     setEmployeeAnalysis(null);
     setActiveEmployeeId(null);
-    setApiLog((log) => [...log, "✅ Cleared to show all reports and overall analysis"]);
+    setApiLog((log) => [
+      ...log,
+      "✅ Cleared to show all reports and overall analysis",
+    ]);
   };
 
   useEffect(() => {
@@ -125,21 +153,40 @@ function App() {
       .get("http://localhost:8000/get-prompt-options")
       .then((res) => setPromptOptions(res.data.prompt_options))
       .catch((error) => {
-        setApiLog((log) => [...log, `❌ Get Prompt Options Error: ${error.message}`]);
+        setApiLog((log) => [
+          ...log,
+          `❌ Get Prompt Options Error: ${error.message}`,
+        ]);
       });
   }, []);
 
   return (
-    <div style={{ display: "grid", gridTemplateRows: "auto 1fr", gap: "1rem", padding: "1rem" }}>
-      <h1>Agent Evaluator Dashboard</h1>
-      
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+    <div className="app-container">
+      <div className="header">
+        <h1>Agent Evaluator Dashboard</h1>
+      </div>
+
+      <div className="input-section">
         <div>
           <h2>Upload Files</h2>
           <input type="file" onChange={handleFileChange} />
-          <input type="text" placeholder="Employee ID" value={employeeId} onChange={(e) => setEmployeeId(e.target.value)} />
-          <input type="text" placeholder="User Prompt" value={userPrompt} onChange={(e) => setUserPrompt(e.target.value)} />
-          <select id="prompt-name" value={promptName} onChange={(e) => setPromptName(e.target.value)}>
+          <input
+            type="text"
+            placeholder="Employee ID"
+            value={employeeId}
+            onChange={(e) => setEmployeeId(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="User Prompt"
+            value={userPrompt}
+            onChange={(e) => setUserPrompt(e.target.value)}
+          />
+          <select
+            id="prompt-name"
+            value={promptName}
+            onChange={(e) => setPromptName(e.target.value)}
+          >
             <option value="">Select Metrics</option>
             {promptOptions.map((option) => (
               <option key={option} value={option}>
@@ -152,7 +199,12 @@ function App() {
 
         <div>
           <h2>Search by Employee ID</h2>
-          <input type="text" placeholder="Search Employee ID" value={searchEmployeeId} onChange={(e) => setSearchEmployeeId(e.target.value)}/>
+          <input
+            type="text"
+            placeholder="Search Employee ID"
+            value={searchEmployeeId}
+            onChange={(e) => setSearchEmployeeId(e.target.value)}
+          />
           <button onClick={handleEmployeeSearch}>Search</button>
           {employeeReports && (
             <button
@@ -165,38 +217,53 @@ function App() {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1rem" }}>
-        <div>
-        <h3>{employeeReports && activeEmployeeId ? `Employee ${activeEmployeeId} Reports` : "All Reports"}</h3>
+      <div className="data-container">
+        <div className="reports-container">
+          <h3>
+            {employeeReports && activeEmployeeId
+              ? `Employee ${activeEmployeeId} Reports`
+              : "All Reports"}
+          </h3>
           <ul className="space-y-2">
             {(employeeReports || reports) &&
-              Object.entries(employeeReports || reports).map(([jobId, data]) => (
-                <li key={jobId}>
-                  <button
-                    onClick={() => fetchReportById(jobId)}
-                    className="text-left text-blue-500 hover:underline"
-                  >
-                    {jobId}
-                  </button>
-                </li>
-              ))}
+              Object.entries(employeeReports || reports).map(
+                ([jobId, data]) => (
+                  <li key={jobId}>
+                    <button
+                      onClick={() => fetchReportById(jobId)}
+                      className="text-left text-blue-500 hover:underline"
+                    >
+                      {jobId}
+                    </button>
+                  </li>
+                )
+              )}
           </ul>
 
           {/* Selected Report */}
           {selectedReport && (
             <div>
               <h3>Selected Report</h3>
-              <pre style={{ whiteSpace: "pre-wrap" }}>{JSON.stringify(selectedReport, null, 2)}</pre>
+              <pre style={{ whiteSpace: "pre-wrap" }}>
+                {JSON.stringify(selectedReport, null, 2)}
+              </pre>
             </div>
           )}
         </div>
 
-        <div>
-          <h3>{employeeAnalysis && activeEmployeeId ? `Employee ${activeEmployeeId} Analysis` : "Overall Analysis"}</h3>
+        <div className="analysis-container">
+          <h3>
+            {employeeAnalysis && activeEmployeeId
+              ? `Employee ${activeEmployeeId} Analysis`
+              : "Overall Analysis"}
+          </h3>
           <div className="space-y-6">
             {(employeeAnalysis || overallAnalysis)?.metrics_data ? (
-              Object.entries((employeeAnalysis || overallAnalysis).metrics_data).map(([metricName, metricInfo]) => {
-                const stats = (employeeAnalysis || overallAnalysis).overall_performance_data[metricName];
+              Object.entries(
+                (employeeAnalysis || overallAnalysis).metrics_data
+              ).map(([metricName, metricInfo]) => {
+                const stats = (employeeAnalysis || overallAnalysis)
+                  .overall_performance_data[metricName];
                 return (
                   <div key={metricName} className="border p-4 rounded shadow">
                     <h3 className="text-xl font-bold mb-2">{metricName}</h3>
@@ -231,7 +298,9 @@ function App() {
         <h3>API Log</h3>
         <ul>
           {apiLog.map((entry, idx) => (
-            <li key={idx} style={{ whiteSpace: "pre-wrap" }}>{entry}</li>
+            <li key={idx} style={{ whiteSpace: "pre-wrap" }}>
+              {entry}
+            </li>
           ))}
         </ul>
       </div>
