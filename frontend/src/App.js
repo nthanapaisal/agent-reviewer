@@ -13,7 +13,7 @@ function App() {
   const [overallAnalysis, setOverallAnalysis] = useState(null);
   const [employeeReports, setEmployeeReports] = useState(null);
   const [employeeAnalysis, setEmployeeAnalysis] = useState(null);
-  const [promptOptions, setPromptOptions] = useState([]);
+  const [promptOptions, setPromptOptions] = useState({});
   const [apiLog, setApiLog] = useState([]);
 
   const handleFileChange = (e) => setFile(e.target.files[0]);
@@ -140,12 +140,15 @@ function App() {
           <input type="text" placeholder="Employee ID" value={employeeId} onChange={(e) => setEmployeeId(e.target.value)} />
           <input type="text" placeholder="User Prompt" value={userPrompt} onChange={(e) => setUserPrompt(e.target.value)} />
           <select id="prompt-name" value={promptName} onChange={(e) => setPromptName(e.target.value)}>
-            <option value="">Select Metrics</option>
-            {promptOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
+          <option value="">Select Metrics (Hover for details)</option>
+            {Object.entries(promptOptions).map(([key, metrics]) => {
+              const tooltipText = Object.entries(metrics).map(([metric, desc]) => `${metric}: ${desc}`).join("\n");
+              return (
+                <option key={key} value={key} title={tooltipText}>
+                  {key}
+                </option>
+              );
+            })}
           </select>
           <button onClick={handleEvaluateAudio}>Evaluate Audio</button>
         </div>
