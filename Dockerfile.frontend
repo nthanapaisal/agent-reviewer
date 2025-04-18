@@ -3,7 +3,14 @@ FROM node:16
 WORKDIR /app
 
 COPY frontend/package*.json ./
-RUN npm install
+
+RUN npm install \
+  @chakra-ui/react@^2.8.1 \
+  @emotion/react@^11.11.1 \
+  @emotion/styled@^11.11.0 \
+  framer-motion@^10.16.3 \
+  @chakra-ui/icons@^2.0.17 \
+  --legacy-peer-deps
 
 COPY frontend ./
 
