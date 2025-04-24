@@ -34,7 +34,7 @@ function App() {
   const [overallAnalysis, setOverallAnalysis] = useState(null);
   const [employeeReports, setEmployeeReports] = useState(null);
   const [employeeAnalysis, setEmployeeAnalysis] = useState(null);
-  const [promptOptions, setPromptOptions] = useState([]);
+  const [promptOptions, setPromptOptions] = useState({});
   const [apiLog, setApiLog] = useState([]);
   const [isEvaluating, setIsEvaluating] = useState(false);
   const { colorMode, toggleColorMode } = useColorMode();
@@ -161,12 +161,18 @@ function App() {
           <Input type="file" onChange={handleFileChange} />
           <Input placeholder="Employee ID" value={employeeId} onChange={(e) => setEmployeeId(e.target.value)} />
           <Textarea placeholder="User Prompt" value={userPrompt} onChange={(e) => setUserPrompt(e.target.value)} />
-          <Select value={promptName} onChange={(e) => setPromptName(e.target.value)}>
-            <option value="">Select Metrics</option>
-            {promptOptions.map((option) => (
-              <option key={option} value={option}>{option}</option>
-            ))}
+          <Select id="prompt-name" value={promptName} onChange={(e) => setPromptName(e.target.value)}>
+          <option value="">Select Metrics (Hover for details)</option>
+            {Object.entries(promptOptions).map(([key, metrics]) => {
+              const tooltipText = Object.entries(metrics).map(([metric, desc]) => `${metric}: ${desc}`).join("\n");
+              return (
+                <option key={key} value={key} title={tooltipText}>
+                  {key}
+                </option>
+              );
+            })}
           </Select>
+          
           <Button onClick={handleEvaluateAudio} colorScheme="teal" isLoading={isEvaluating} loadingText="Evaluating...">
             Evaluate Audio
           </Button>

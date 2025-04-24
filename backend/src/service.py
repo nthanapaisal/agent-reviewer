@@ -211,6 +211,6 @@ def get_prompt_options():
     try:
         with open(metrics_path, "r", encoding="utf-8") as f:
             data = json.load(f)
-        return list(data.keys())
+        return data
     except Exception as e:
         raise RuntimeError(f"Failed to load prompt options: {e}")
