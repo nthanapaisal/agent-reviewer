@@ -26,19 +26,19 @@ Agent Reviewer is a powerful application designed to evaluate call center person
 
 ## 📦 Quick Start
 
-1. <b>API Key</b>
+1. <b>API Key</b><br>
 Agree to the Pyannote.audio terms and generate Hugging Face API key https://github.com/pyannote/pyannote-audio?tab=readme-ov-file#tldr
 
-1. <b>Clone</b>
+2. <b>Clone</b><br>
 ```git clone https://github.com/nthanapaisal/agent-reviewer```
 
-1. <b>Env</b>
-```cd agent-reviewer/backend/src/```
-create file ```.env```
+3. <b>Env</b><br>
+```cd agent-reviewer/backend/src/```<br>
+create file ```.env```<br>
 add API key to .env file ```HUGGING_FACE="your_api_key_here"```
 
-1. <b>Compose</b>
-```cd agent-reviewer```
+4. <b>Compose</b><br>
+```cd agent-reviewer```<br>
 ```docker compose up --build -d```
 
 Further documentation  located in [BUILD.md](./BUILD.md)
