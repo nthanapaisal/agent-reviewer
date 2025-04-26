@@ -19,7 +19,7 @@ app.add_middleware(
 class PromptRequest(BaseModel):
     transcription: str
     user_prompt: Optional[str] = None
-    prompt_name: Optional[str] = None
+    metric_name: Optional[str] = None
 
 class EvaluatorRequest(BaseModel):
     prompt: str
@@ -49,7 +49,7 @@ async def transcribe(file: UploadFile = File(...)):
 @app.post("/generate-prompts")
 def generate_prompts(prompt_payload: PromptRequest):
     try:
-        prompts = generate_prompt_suggestions(prompt_payload.transcription, prompt_payload.user_prompt, prompt_payload.prompt_name)
+        prompts = generate_prompt_suggestions(prompt_payload.transcription, prompt_payload.user_prompt, prompt_payload.metric_name)
         return {"prompts": prompts}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Prompt generation failed: {str(e)}")
@@ -76,7 +76,7 @@ async def evaluate_audio(
     file: UploadFile = File(...),                 # required
     employee_id: str = Form(...),
     user_prompt: Optional[str] = Form(None),      # optional, defaults to None
-    prompt_name: Optional[str] = Form(None)       # optional, defaults to None
+    metric_name: Optional[str] = Form(None)       # optional, defaults to None
 ):
     temp_filename = f"temp_{file.filename}"
     try:
@@ -84,7 +84,7 @@ async def evaluate_audio(
             shutil.copyfileobj(file.file, buffer)
             print(f"Temp file created: {temp_filename}")
 
-        complete_analysis = await evaluate_conversation(temp_filename, employee_id, user_prompt, prompt_name)
+        complete_analysis = await evaluate_conversation(temp_filename, employee_id, user_prompt, metric_name)
         return complete_analysis
 
     except Exception as e:

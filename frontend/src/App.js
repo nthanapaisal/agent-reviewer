@@ -54,7 +54,7 @@ function App() {
     setIsEvaluating(true);
     try {
       const res = await axios.post("http://localhost:8000/evaluate_audio", formData);
-      setApiLog((log) => [...log, `✅ Evaluate Audio Success: ${JSON.stringify(res.data)}`]);
+      setApiLog((log) => [...log, `Evaluate Audio Success: ${JSON.stringify(res.data)}`]);
       fetchReports();
       fetchOverallAnalysis();
       setFile(null);
@@ -63,7 +63,7 @@ function App() {
       setUserPrompt("");
       setPromptName("");
     } catch (error) {
-      setApiLog((log) => [...log, `❌ Evaluate Audio Error: ${error.message}`]);
+      setApiLog((log) => [...log, `Evaluate Audio Error: ${error.message}`]);
     } finally {
       setIsEvaluating(false);
     }
@@ -74,14 +74,14 @@ function App() {
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
       if (data.error) {
-        setApiLog((log) => [...log, `❌ WebSocket Reports Error: ${data.error}`]);
+        setApiLog((log) => [...log, `WebSocket Reports Error: ${data.error}`]);
       } else {
         setReports(data);
-        setApiLog((log) => [...log, `✅ WebSocket Received Reports`]);
+        setApiLog((log) => [...log, `WebSocket Received Reports`]);
       }
     };
     socket.onerror = () => {
-      setApiLog((log) => [...log, `❌ WebSocket Reports Connection Error`]);
+      setApiLog((log) => [...log, `WebSocket Reports Connection Error`]);
     };
   };
 
@@ -90,7 +90,7 @@ function App() {
       const res = await axios.get("http://localhost:8000/get-report-id", { params: { job_id: jobId } });
       setSelectedReport(res.data);
     } catch (error) {
-      setApiLog((log) => [...log, `❌ Get Report ID Error: ${error.message}`]);
+      setApiLog((log) => [...log, `Get Report ID Error: ${error.message}`]);
     }
   };
 
@@ -99,14 +99,14 @@ function App() {
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
       if (data.error) {
-        setApiLog((log) => [...log, `❌ WebSocket Analysis Error: ${data.error}`]);
+        setApiLog((log) => [...log, `WebSocket Analysis Error: ${data.error}`]);
       } else {
         setOverallAnalysis(data);
-        setApiLog((log) => [...log, `✅ WebSocket Received Analysis`]);
+        setApiLog((log) => [...log, `WebSocket Received Analysis`]);
       }
     };
     socket.onerror = () => {
-      setApiLog((log) => [...log, `❌ WebSocket Analysis Connection Error`]);
+      setApiLog((log) => [...log, `WebSocket Analysis Connection Error`]);
     };
   };
 
@@ -123,12 +123,12 @@ function App() {
       setEmployeeAnalysis(analysisRes.data);
 
       setActiveEmployeeId(searchEmployeeId);
-      setApiLog((log) => [...log, `✅ Employee report and analysis loaded for: ${searchEmployeeId}`]);
+      setApiLog((log) => [...log, `Employee report and analysis loaded for: ${searchEmployeeId}`]);
     } catch (error) {
       setEmployeeReports(null);
       setEmployeeAnalysis(null);
       setActiveEmployeeId(null);
-      setApiLog((log) => [...log, `❌ Employee data error: ${error.message}`]);
+      setApiLog((log) => [...log, `Employee data error: ${error.message}`]);
     }
   };
 
@@ -137,7 +137,7 @@ function App() {
     setEmployeeReports(null);
     setEmployeeAnalysis(null);
     setActiveEmployeeId(null);
-    setApiLog((log) => [...log, "✅ Cleared to show all reports and overall analysis"]);
+    setApiLog((log) => [...log, "Cleared to show all reports and overall analysis"]);
   };
 
   useEffect(() => {
@@ -147,7 +147,7 @@ function App() {
       .get("http://localhost:8000/get-prompt-options")
       .then((res) => setPromptOptions(res.data.prompt_options))
       .catch((error) => {
-        setApiLog((log) => [...log, `❌ Get Prompt Options Error: ${error.message}`]);
+        setApiLog((log) => [...log, `Get Prompt Options Error: ${error.message}`]);
       });
   }, []);
 
