@@ -38,12 +38,20 @@ def map_speakers(transcription):
     return " ".join(formatted_lines)
 
 def transcribe_file(filepath: str):
-    time = datetime.datetime.now()
+    time = datetime.datetime.now().strftime("%Y-%m-%d[%H:%M:%S]")
     temp_name = "audio.wav"
     
     audio = AudioSegment.from_file(filepath)
-    duration = len(audio)
-    
+
+    duration_ms = len(audio)
+    duration_sec = int(duration_ms / 1000)  
+
+    hours = duration_sec // 3600
+    minutes = (duration_sec % 3600) // 60
+    seconds = duration_sec % 60
+
+    duration = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+
     file = pad_audio(filepath, temp_name)
     
     load_dotenv()

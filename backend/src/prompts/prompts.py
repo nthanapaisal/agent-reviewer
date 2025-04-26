@@ -32,7 +32,7 @@ def extract_keywords(user_prompt: str) -> List[str]:
 
     return list(filtered_keywords)
 
-def build_prompt(transcription: str, user_prompt: Optional[str], prompt_name: Optional[str]):
+def build_prompt(transcription: str, user_prompt: Optional[str], metric_name: Optional[str]):
     
     print("-----------------------")
     print("Log: constructing prompts_payload")
@@ -42,18 +42,22 @@ def build_prompt(transcription: str, user_prompt: Optional[str], prompt_name: Op
     metrics = load_json("./backend/configs/metrics.json")
     prompts = load_json("./backend/configs/prompts.json")
 
-    # Use default for prompt_name if it is None or empty, had to do it this way instead of via param
-    prompt_name = prompt_name or "customer_service_metrics"
+    # Use default for metric_name if it is None or empty, had to do it this way instead of via param
+    metric_name = metric_name or "customer_service_metrics"
 
-    # Check if the prompt_name exists in metrics
-    if prompt_name not in metrics:
-        raise HTTPException(status_code=400, detail=f"Unknown prompt_name: '{prompt_name}'")
-
-    if not user_prompt:
-        user_prompt = ", ".join(metrics[prompt_name].keys())
+    # Check if the metric_name exists in metrics
+    if metric_name not in metrics:
+        raise HTTPException(status_code=400, detail=f"Unknown metric_name: '{metric_name}'")
 
     # Optionally, you might extract keywords if needed:
-    extracted_keywords = extract_keywords(user_prompt)
+    if user_prompt:
+        extracted_keywords = extract_keywords(user_prompt)
+        if extracted_keywords:
+            prompt_user_text = ", ".join(extracted_keywords)
+        else:
+            prompt_user_text = user_prompt
+    else:
+        prompt_user_text = "No additional metrics from user"
 
     # Get the prompt template
     prompt_template = prompts["template"]
@@ -62,8 +66,8 @@ def build_prompt(transcription: str, user_prompt: Optional[str], prompt_name: Op
     try:
         formatted_prompt = prompt_template.format(
             transcription=transcription,
-            metrics=", ".join(metrics[prompt_name].keys()),  # or change to a different default if needed
-            user_prompt=", ".join(extracted_keywords) if extracted_keywords else user_prompt
+            metrics=", ".join(metrics[metric_name].keys()),
+            user_prompt=prompt_user_text
         )
     except Exception as e:
         raise ValueError(f"Prompt generation failed: {str(e)}")
@@ -72,5 +76,4 @@ def build_prompt(transcription: str, user_prompt: Optional[str], prompt_name: Op
     print("Log: completed construction prompts_payload")
     print("-----------------------")
     
-    return (formatted_prompt, user_prompt, prompt_name)
-
+    return (formatted_prompt, user_prompt, metric_name)

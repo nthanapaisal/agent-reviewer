@@ -9,5 +9,16 @@
       "Engagement Level": "Evaluates the depth of the user's interaction (e.g., simple response vs. asking more questions)",
       "Problem Solved": "Indicates whether the agent successfully solved the user's problem",
       "Context Awareness": "Evaluates whether the agent correctly understands the conversation context"
+  },
+  "minor_customer_service_metrics": {
+    "Friendliness": "Was the agent's tone warm, welcoming, and easy to talk to?",
+    "Helpfulness": "Did the agent genuinely try to help and provide useful information?",
+    "Understanding": "Did the agent show they understood the user's question or issue?",
+    "Clarity of Explanation": "Was the agent's response easy to understand without sounding robotic?",
+    "Tone and Mood": "Did the agent maintain a positive and calm attitude throughout the interaction?",
+    "Approachability": "Did the user feel comfortable asking more questions or continuing the conversation?",
+    "Personal Touch": "Did the agent make the conversation feel human and not scripted?",
+    "Resolution Confidence": "Did the agent make the user feel that their issue was being handled confidently?",
+    "Flow of Conversation": "Did the conversation feel smooth and natural without awkward pauses or confusion?"
   }
 }
