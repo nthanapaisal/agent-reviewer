@@ -14,11 +14,11 @@ import {
   Image,
   HStack,
   useColorMode,
+  useColorModeValue,
   IconButton,
   UnorderedList,
   ListItem,
   Flex,
-  useToast,
 } from "@chakra-ui/react";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 
@@ -38,6 +38,9 @@ function App() {
   const [apiLog, setApiLog] = useState([]);
   const [isEvaluating, setIsEvaluating] = useState(false);
   const { colorMode, toggleColorMode } = useColorMode();
+  const [fileInputKey, setFileInputKey] = useState(Date.now());
+
+  const boxBg = useColorModeValue("gray.50", "gray.700");
 
   const handleFileChange = (e) => setFile(e.target.files[0]);
 
@@ -54,6 +57,11 @@ function App() {
       setApiLog((log) => [...log, `Evaluate Audio Success: ${JSON.stringify(res.data)}`]);
       fetchReports();
       fetchOverallAnalysis();
+      setFile(null);
+      setFileInputKey(Date.now());
+      setEmployeeId("");
+      setUserPrompt("");
+      setPromptName("");
     } catch (error) {
       setApiLog((log) => [...log, `Evaluate Audio Error: ${error.message}`]);
     } finally {
@@ -125,6 +133,7 @@ function App() {
   };
 
   const clearEmployeeSearch = () => {
+    setSearchEmployeeId("");
     setEmployeeReports(null);
     setEmployeeAnalysis(null);
     setActiveEmployeeId(null);
@@ -145,7 +154,7 @@ function App() {
   return (
     <Container maxW="7xl" p={4}>
       <HStack justify="space-between" mb={4}>
-        <Heading>Agent Evaluator Dashboard</Heading>
+        <Heading>Customer Service Audio Analyzer</Heading>
         <IconButton
           icon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
           onClick={toggleColorMode}
@@ -157,12 +166,12 @@ function App() {
 
       <HStack spacing={10} align="flex-start" mb={8}>
         <VStack spacing={4} align="stretch" flex={1}>
-          <Heading size="md">Upload Files</Heading>
-          <Input type="file" onChange={handleFileChange} />
-          <Input placeholder="Employee ID" value={employeeId} onChange={(e) => setEmployeeId(e.target.value)} />
+          <Heading size="md">Upload Conversation Autio Files</Heading>
+          <Input key={fileInputKey} type="file" onChange={handleFileChange}/>
+          <Input placeholder="Employee ID (Required)" value={employeeId} onChange={(e) => setEmployeeId(e.target.value)}/>
           <Textarea placeholder="User Prompt" value={userPrompt} onChange={(e) => setUserPrompt(e.target.value)} />
           <Select id="prompt-name" value={promptName} onChange={(e) => setPromptName(e.target.value)}>
-          <option value="">Select Metrics (Hover for details)</option>
+          <option value="">Select Metrics (Required, hover for details)</option>
             {Object.entries(promptOptions).map(([key, metrics]) => {
               const tooltipText = Object.entries(metrics).map(([metric, desc]) => `${metric}: ${desc}`).join("\n");
               return (
@@ -173,7 +182,11 @@ function App() {
             })}
           </Select>
           
-          <Button onClick={handleEvaluateAudio} colorScheme="teal" isLoading={isEvaluating} loadingText="Evaluating...">
+          <Button onClick={handleEvaluateAudio}
+                  colorScheme="teal"
+                  isLoading={isEvaluating}
+                  loadingText="Evaluating..."
+                  isDisabled={!file || !employeeId || !promptName}>
             Evaluate Audio
           </Button>
         </VStack>
@@ -183,7 +196,7 @@ function App() {
         <VStack spacing={4} align="stretch" flex={1}>
           <Heading size="md">Search by Employee ID</Heading>
           <Input placeholder="Search Employee ID" value={searchEmployeeId} onChange={(e) => setSearchEmployeeId(e.target.value)} />
-          <Button onClick={handleEmployeeSearch} colorScheme="blue">Search</Button>
+          <Button onClick={handleEmployeeSearch} colorScheme="blue" isDisabled={!searchEmployeeId}>Search</Button>
           {employeeReports && (
             <Button onClick={clearEmployeeSearch}>Show All Reports / Overall Analysis</Button>
           )}
@@ -210,7 +223,7 @@ function App() {
             <Box mt={6} maxW="100%">
               <Divider mb={4} />
               <Heading size="sm" mb={2}>Selected Report</Heading>
-              <Box p={3} border="1px solid #ddd" borderRadius="md" bg="gray.50" whiteSpace="pre-wrap" maxH="1000px" overflowY="auto">
+              <Box p={3} border="1px solid #ddd" borderRadius="md" bg={boxBg} whiteSpace="pre-wrap" maxH="1000px" overflowY="auto">
                 <pre>{JSON.stringify(selectedReport, null, 2)}</pre>
               </Box>
             </Box>
@@ -252,7 +265,7 @@ function App() {
 
       <Box mt={10}>
         <Heading size="md" mb={2}>API Log</Heading>
-        <Box bg="gray.100" p={3} borderRadius="md" maxHeight="200px" overflowY="auto" fontFamily="mono" fontSize="sm">
+        <Box bg={boxBg} p={3} borderRadius="md" maxHeight="200px" overflowY="auto" fontFamily="mono" fontSize="sm">
           {apiLog.map((entry, idx) => (
             <Text key={idx}>{entry}</Text>
           ))}

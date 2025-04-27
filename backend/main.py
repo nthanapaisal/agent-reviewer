@@ -111,7 +111,7 @@ def get_report_id(job_id: str):
         raise HTTPException(status_code=500, detail=f"Analysis generation failed: {str(e)}")
     
 @app.get("/get-report-employee")
-def get_report_id(employee_id: str):
+def get_report_employee(employee_id: str):
     try:
         report = read_reports_by_employee(employee_id)
         return report
