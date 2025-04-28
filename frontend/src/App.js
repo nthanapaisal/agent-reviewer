@@ -125,9 +125,11 @@ function App() {
       setActiveEmployeeId(searchEmployeeId);
       setApiLog((log) => [...log, `Employee report and analysis loaded for: ${searchEmployeeId}`]);
     } catch (error) {
+      setSearchEmployeeId("");
       setEmployeeReports(null);
       setEmployeeAnalysis(null);
       setActiveEmployeeId(null);
+      alert(`Employee ID ${searchEmployeeId} not found!`);
       setApiLog((log) => [...log, `Employee data error: ${error.message}`]);
     }
   };
