@@ -214,3 +214,54 @@ def get_prompt_options():
         return data
     except Exception as e:
         raise RuntimeError(f"Failed to load prompt options: {e}")
+
+async def evaluate_script(script: str) -> dict:
+
+    print("-----------------------")
+    print(f"Log: evaluating conversation script")
+    print("-----------------------")
+
+    #generate uuid
+    job_id = str(uuid.uuid4())
+
+    prompt_payload, user_prompt, metric_name = build_prompt(script, "", "customer_service_metrics")
+    result = evaluate_transcription_quality(prompt_payload)
+    print(result)
+    if isinstance(result, str):
+        try:
+            result = json.loads(result)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"LLM output is not valid JSON:\n{result}\n\nError: {e}")
+
+    complete_analysis = {
+        "job_id": job_id,
+        "input_user_prompt": user_prompt,
+        "input_metric_name": metric_name,
+        "prompt_payload": prompt_payload,
+        "evaluated_transcription": result["report"],
+        "evaluate_summary": result["summary"]
+    }
+
+    # save to database 
+    os.makedirs("./reports", exist_ok=True)
+    output_path = "./reports/all_reports.json"
+
+    # Load existing data if file exists, otherwise start with empty dict
+    if os.path.exists(output_path):
+        with open(output_path, "r", encoding="utf-8") as f:
+            all_reports = json.load(f)
+    else:
+        all_reports = {}
+
+    # Add or update the current job's report
+    all_reports[job_id] = complete_analysis
+
+    # Save back to file
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(all_reports, f, indent=2, ensure_ascii=False)
+
+    print("-----------------------")
+    print(f"Log: completed final report and saved to all_reports.json for job_id {job_id}")
+    print("-----------------------")
+
+    return complete_analysis
