@@ -175,10 +175,10 @@ async def websocket_get_overall_analysis(websocket: WebSocket):
 
 @app.post("/test")
 async def test(
-    script: str = Form(...)
+    transcript: str = Form(...)
 ):
     try:
-        complete_analysis = await evaluate_script(script)
+        complete_analysis = await evaluate_script(transcript)
         return complete_analysis
 
     except Exception as e:
