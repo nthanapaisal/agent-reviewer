@@ -55,14 +55,6 @@ Further documentation  located in [BUILD.md](./BUILD.md)
 4. Analysis: Mistral-7B
 5. Trend Generation: Numpy
 
-## 📚 Examples
-
-<p align="center">
-  <img alt="Light" src="./light.png" width="45%">
-&nbsp; &nbsp; &nbsp; &nbsp;
-  <img alt="Dark" src="./dark.png" width="45%">
-</p>
-
 ## 📈 Metrics
 
 Relevance: Evaluates whether the agent's response addresses the user's question<br>
@@ -78,3 +70,19 @@ Context Awareness: Evaluates whether the agent correctly understands the convers
 ## 💬 Default Prompt
 
 You are an agent evaluator. Evaluate the agent in this conversation: \"{transcription}\" using these metrics: \"{metrics}\", also focus and show first on \"{user_prompt}\" giving a score on a scale out of 5. Be flexible and reasonable in your evaluation—do not apply overly strict standards. Consider the agent’s intent, overall helpfulness, and adaptability when scoring. At the end provide a 2–3 sentence paragraph summarizing the agent's performance. Note that the transcript speaker labels may be inaccurate; you may reassess them when evaluating.\nReturn your response strictly as a valid JSON object using double quotes for all keys and strings, like this:\n{{\n  \"report\": [[\"metric_name\", score, \"reason\"], ...],\n  \"summary\": \"Your 2–3 sentence summary here.\"\n}}
+
+## 📚 Examples
+
+<p align="center">
+  <img src="./images/landing.png" width="45%" style="vertical-align: middle;">
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="./images/after.png" width="45%" style="vertical-align: middle;">
+</p>
+
+---
+
+<p align="center">
+  <img src="./images/analysis.png" width="45%" style="vertical-align: middle;">
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="./images/report.png" width="45%" style="vertical-align: middle;">
+</p>
