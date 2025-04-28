@@ -214,3 +214,36 @@ def get_prompt_options():
         return data
     except Exception as e:
         raise RuntimeError(f"Failed to load prompt options: {e}")
+
+async def evaluate_script(transcript: str) -> dict:
+
+    print("-----------------------")
+    print(f"Log: evaluating conversation script")
+    print("-----------------------")
+
+    #generate uuid
+    job_id = str(uuid.uuid4())
+
+    prompt_payload, user_prompt, metric_name = build_prompt(transcript, "", "customer_service_metrics")
+    result = evaluate_transcription_quality(prompt_payload)
+
+    if isinstance(result, str):
+        try:
+            result = json.loads(result)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"LLM output is not valid JSON:\n{result}\n\nError: {e}")
+
+    complete_analysis = {
+        "job_id": job_id,
+        "input_user_prompt": user_prompt,
+        "input_metric_name": metric_name,
+        "prompt_payload": prompt_payload,
+        "evaluated_transcription": result["report"],
+        "evaluate_summary": result["summary"]
+    }
+
+    print("-----------------------")
+    print(f"Log: completed final report and saved to all_reports.json for job_id {job_id}")
+    print("-----------------------")
+
+    return complete_analysis

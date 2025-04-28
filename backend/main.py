@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from typing import Optional
 import shutil
 import os
-from src.service import transcribe_audio, generate_prompts as generate_prompt_suggestions, evaluate_transcription, create_analysis, evaluate_conversation, read_all_reports, read_report_by_id, read_reports_by_employee, generate_reports_analysis, generate_employee_analysis, get_reports_analysis, get_prompt_options
+from src.service import transcribe_audio, generate_prompts as generate_prompt_suggestions, evaluate_transcription, create_analysis, evaluate_conversation, read_all_reports, read_report_by_id, read_reports_by_employee, generate_reports_analysis, generate_employee_analysis, get_reports_analysis, get_prompt_options, evaluate_script
 
 app = FastAPI()
 
@@ -172,3 +172,14 @@ async def websocket_get_overall_analysis(websocket: WebSocket):
         await websocket.send_json({"error": str(e)})
     finally:
         await websocket.close()
+
+@app.post("/test")
+async def test(
+    transcript: str = Form(...)
+):
+    try:
+        complete_analysis = await evaluate_script(transcript)
+        return complete_analysis
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
