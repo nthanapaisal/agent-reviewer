@@ -43,6 +43,10 @@ add API key to .env file ```HUGGING_FACE="your_api_key_here"```
 
 Further documentation  located in [BUILD.md](./BUILD.md)
 
+## 📝 Diagram
+
+<img src="./images/diagram.png">
+
 ## ⚙️ Pipeline (simplified)
 
 1. Speaker Diarization: pyannote.audio
@@ -50,3 +54,27 @@ Further documentation  located in [BUILD.md](./BUILD.md)
 3. Prompt Construction: Spacy
 4. Analysis: Mistral-7B
 5. Trend Generation: Numpy
+
+## 📚 Examples
+
+<p align="center">
+  <img alt="Light" src="./light.png" width="45%">
+&nbsp; &nbsp; &nbsp; &nbsp;
+  <img alt="Dark" src="./dark.png" width="45%">
+</p>
+
+## 📈 Metrics
+
+Relevance: Evaluates whether the agent's response addresses the user's question<br>
+Clarity: Evaluates the clarity of the agent's response<br>
+Sentiment Score: Analyzes the sentiment polarity of the agent's tone (positive, neutral, negative)<br>
+Completeness: Evaluates whether the agent's response contains complete information<br>
+Consistency: Evaluates whether the agent's response is consistent with the context<br>
+User Satisfaction: Measures the user's satisfaction with the agent's response<br>
+Engagement Level: Evaluates the depth of the user's interaction (e.g., simple response vs. asking more questions)<br>
+Problem Solved: Indicates whether the agent successfully solved the user's problem<br>
+Context Awareness: Evaluates whether the agent correctly understands the conversation context
+
+## 💬 Default Prompt
+
+You are an agent evaluator. Evaluate the agent in this conversation: \"{transcription}\" using these metrics: \"{metrics}\", also focus and show first on \"{user_prompt}\" giving a score on a scale out of 5. Be flexible and reasonable in your evaluation—do not apply overly strict standards. Consider the agent’s intent, overall helpfulness, and adaptability when scoring. At the end provide a 2–3 sentence paragraph summarizing the agent's performance. Note that the transcript speaker labels may be inaccurate; you may reassess them when evaluating.\nReturn your response strictly as a valid JSON object using double quotes for all keys and strings, like this:\n{{\n  \"report\": [[\"metric_name\", score, \"reason\"], ...],\n  \"summary\": \"Your 2–3 sentence summary here.\"\n}}
