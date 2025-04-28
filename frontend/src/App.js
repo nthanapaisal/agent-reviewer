@@ -166,7 +166,7 @@ function App() {
 
       <HStack spacing={10} align="flex-start" mb={8}>
         <VStack spacing={4} align="stretch" flex={1}>
-          <Heading size="md">Upload Conversation Autio Files</Heading>
+          <Heading size="md">Upload Conversation Audio Files</Heading>
           <Input key={fileInputKey} type="file" onChange={handleFileChange}/>
           <Input placeholder="Employee ID (Required)" value={employeeId} onChange={(e) => setEmployeeId(e.target.value)}/>
           <Textarea placeholder="User Prompt" value={userPrompt} onChange={(e) => setUserPrompt(e.target.value)} />
