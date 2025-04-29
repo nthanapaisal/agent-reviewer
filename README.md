@@ -24,6 +24,12 @@ Agent Reviewer is a powerful application designed to evaluate call center person
 3. <b>Review</b> an automatically generated evaluation report.
 4. <b>Analyze</b> employee trends and insights across multiple recordings.
 
+## 📊 Presentation, Demo, and Report
+
+[Presentation](https://www.youtube.com/watch?v=6meUpAdhCMM)<br>
+[Demo](https://www.youtube.com/watch?v=VtGpv9y1cGk)<br>
+[Report](https://docs.google.com/document/d/15oGavOF3YFqVtBIc-VrH7A3wUE2p8VxLUmTzzLkb1Xg/edit?usp=sharing)
+
 ## 📦 Quick Start
 
 1. <b>API Key</b><br>
